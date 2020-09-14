@@ -94,7 +94,7 @@ defmodule Mail.Parsers.RFC2822 do
   defp parse_headers(message, [header | tail]) do
     [name, body] = String.split(header, ":", parts: 2)
     key = String.downcase(name)
-    headers = Map.put(message.headers, key, parse_header_value(name, body))
+    headers = Map.put(message.headers, key, parse_header_value(key, body))
     message = %{message | headers: headers}
     parse_headers(message, tail)
   end
@@ -114,32 +114,32 @@ defmodule Mail.Parsers.RFC2822 do
   defp parse_header_value(key, "\t" <> value),
     do: parse_header_value(key, value)
 
-  defp parse_header_value("To", value),
+  defp parse_header_value("to", value),
     do: parse_recipient_value(value)
 
-  defp parse_header_value("CC", value),
+  defp parse_header_value("cc", value),
     do: parse_recipient_value(value)
 
-  defp parse_header_value("From", value),
+  defp parse_header_value("from", value),
     do:
       parse_recipient_value(value)
       |> List.first()
 
-  defp parse_header_value("Reply-To", value),
+  defp parse_header_value("reply-to", value),
     do:
       parse_recipient_value(value)
       |> List.first()
 
-  defp parse_header_value("Date", timestamp),
+  defp parse_header_value("date", timestamp),
     do: erl_from_timestamp(timestamp)
 
-  defp parse_header_value("Received", value),
+  defp parse_header_value("received", value),
     do: parse_received_value(value)
 
-  defp parse_header_value("Content-Type", value),
+  defp parse_header_value("content-type", value),
     do: parse_structured_header_value(value)
 
-  defp parse_header_value("Content-Disposition", value),
+  defp parse_header_value("content-disposition", value),
     do: parse_structured_header_value(value)
 
   defp parse_header_value(_key, value),
